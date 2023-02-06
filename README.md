@@ -42,7 +42,7 @@ $ touch /etc/ maxscale.cnf
 
 •	Multi-Master Replication
 ```
-//Global parameters Master-Master Replication
+# Global parameters Master-Master Replication
 [maxscale]
 threads = auto
 log_augmentation = 1
@@ -53,8 +53,8 @@ syslog = 1
 type=service
 router=readwritesplit
 servers=master1,master2
-user=maxscaleuser //The username that will monitor the DB
-password=maxscalepassword //The monitor username's password
+user=maxscaleuser # The username that will monitor the DB
+password=maxscalepassword # The monitor username's password
 
 [Splitter-Listener]
 type=listener
@@ -66,73 +66,73 @@ port=3306
 type=monitor
 module=mariadbmon
 servers=master1,master2
-user=maxscaleuser //The username that will monitor the DB
-password=maxscalepassword //The monitor username's password
+user=maxscaleuser # The username that will monitor the DB
+password=maxscalepassword # The monitor username's password
 monitor_interval=200
 detect_stale_master=1
 detect_replication_lag=true
 
 [master1]
 type=server
-address=<monitor_server_ip_address_1> //The monitor server IP address
+address=<monitor_server_ip_address_1> # The monitor server IP address
 port=3306
 protocol=MySQLBackend
 
 [master2]
 type=server
-address=<monitor_server_ip_address_2> //The monitor server IP address
+address=<monitor_server_ip_address_2> # The monitor server IP address
 port=3306
 protocol=MySQLBackend
 ```
 
 •	Master-Slave Replication
 ```
-// Global parameters Master-Slave Replication
+# Global parameters Master-Slave Replication
 [maxscale]
 threads = auto
 log_augmentation = 1
 ms_timestamp = 1
 syslog = 1
 
-// Server definitions
+# Server definitions
 [server1]
 type=server
-address=<monitor_server_ip_address_1> //The monitor server IP address
+address=<monitor_server_ip_address_1> # The monitor server IP address
 port=3306
 protocol=MariaDBBackend
 
 [server2]
 type=server
-address=<monitor_server_ip_address_2>  //The monitor server IP address
+address=<monitor_server_ip_address_2>  # The monitor server IP address
 port=3306
 protocol=MariaDBBackend
 
-// Monitor for the servers
+# Monitor for the servers
 [MariaDB-Monitor]
 type=monitor
 module=mariadbmon
 servers=server1,server2
-user=maxscaleuser //The username that will monitor the DB
-password=maxscalepassword //The monitor username's password
+user=maxscaleuser # The username that will monitor the DB
+password=maxscalepassword # The monitor username's password
 monitor_interval=2000
 
-// Service definitions
+# Service definitions
 [Read-Only-Service]
 type=service
 router=readconnroute
 servers=server2
-user=maxscaleuser // The username that will monitor the DB
-password=maxscalepassword // The monitor username's password
+user=maxscaleuser # The username that will monitor the DB
+password=maxscalepassword # The monitor username's password
 router_options=slave
 
 [Read-Write-Service]
 type=service
 router=readwritesplit
 servers=server1
-user=maxscaleuser // The username that will monitor the DB
-password=maxscalepassword // The monitor username's password
+user=maxscaleuser # The username that will monitor the DB
+password=maxscalepassword # The monitor username's password
 
-// Listener definitions for the services
+# Listener definitions for the services
 [Read-Only-Listener]
 type=listener
 service=Read-Only-Service
@@ -160,11 +160,11 @@ mariadb[none]> GRANT SELECT ON mysql.* TO 'maxscaleuser'@'%';
 
 5. After successfully add monitor user on the database, we need to start the maxscale services.
 ```
-// To enable the maxscale service
+# To enable the maxscale service
 $ systemctl enable maxscale
-// To start the maxscale service
+# To start the maxscale service
 $ systemctl start maxscale
-// To check the maxscale status
+# To check the maxscale status
 $ systemctl status maxscale
 ```
 
@@ -234,4 +234,4 @@ Or
 $ service maxscale restart
 ```
 
-15. Access the MaxScale GUI by browsing URL in the browser which https://<hostname/IP>:8989. The default username and password are admin and mariadb.
+15. Access the MaxScale GUI by browsing URL in the browser which **https://<hostname/IP>:8989**. The default username and password are **admin** and **mariadb**.
