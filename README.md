@@ -41,7 +41,6 @@ $ touch /etc/ maxscale.cnf
 3. There are two configurations one is multi-master replication setup configuration and master-slave replication setup configuration.
 
 •	Multi-Master Replication
-
 ```
 //Global parameters Master-Master Replication
 [maxscale]
@@ -87,7 +86,6 @@ protocol=MySQLBackend
 ```
 
 •	Master-Slave Replication
-
 ```
 // Global parameters Master-Slave Replication
 [maxscale]
@@ -171,10 +169,69 @@ $ systemctl status maxscale
 ```
 
 6.	After starting the maxscale services, we can monitor the Databases that have been added inside the maxscale monitoring service.
-
 ```
 $ maxctrl list servers
 ```
 
+## How to enable MaxScale GUI form
 
+7.	Next need to add the configuration to enable the MaxScale GUI. Then, need to prepare the SSL cert in order to access the MaxScale GUI.
+```
+$ mkdir /etc/certs
+$ cd /etc/certs
+$ sudo openssl genrsa 4096 > ca-key.pem
+$ sudo openssl req -new -x509 -nodes -days 365000 -key ca-key.pem -out ca-cert.pem
+```
 
+8.	At the end of it you will have two as follows: -
+•	/etc/certs/ca-cert.pem = Certificate file for the Certificate Authority (CA).
+•	/etc/certs/ca-key.pem = Key file for the Certificate Authority (CA).
+
+9.	Now using these both files we need to generate the SSL certificate.
+```
+$ sudo openssl req -newkey rsa:2048 -days 365000 -nodes -keyout server-key.pem -out server-req.pem
+$ sudo openssl rsa -in server-key.pem -out server-key.pem
+$ sudo openssl x509 -req -in server-req.pem -days 365000 -CA ca-cert.pem -CAkey ca-key.pem -set_serial 01 -out server-cert.pem
+```
+
+10.	Verify the produced certificate
+```
+$ openssl verify -CAfile ca-cert.pem ca-cert.pem server-cert.pem
+$ openssl verify -CAfile ca-cert.pem ca-cert.pem client-cert.pem
+```
+
+11. Change the permission for the server-key certificate.
+```
+$ chmod +r server-key.pem 
+```
+
+12. Configure the max-scale configuration files at the **/etc/maxscale.cnf**.
+```
+$ vim /etc/maxscale.cnf
+```
+
+13. The MaxScale configuration files: -
+```
+[maxscale]
+threads=auto
+#Needed to enable MAXScale GUI
+admin_host=0.0.0.0
+#Needed to enable MAXScale GUI
+admin_port=8989 
+
+#Needed to enable MAXScale GUI
+admin_ssl_key=/etc/certs/server-key.pem
+#Needed to enable MAXScale GUI
+admin_ssl_cert=/etc/certs/server-cert.pem
+#Needed to enable MAXScale GUI 
+admin_ssl_ca_cert=/etc/certs/ca-cert.pem 
+```
+
+14. After edit the MaxScale configuration files we need to restart the MaxScale service by running the command below.
+```
+$ systemctl restart maxscale
+Or
+$ service maxscale restart
+```
+
+15. Access the MaxScale GUI by browsing URL in the browser which https://<hostname/IP>:8989. The default username and password are admin and mariadb.
