@@ -162,8 +162,10 @@ mariadb[none]> GRANT SELECT ON mysql.* TO 'maxscaleuser'@'%';
 ```
 # To enable the maxscale service
 $ systemctl enable maxscale
+
 # To start the maxscale service
 $ systemctl start maxscale
+
 # To check the maxscale status
 $ systemctl status maxscale
 ```
